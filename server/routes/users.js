@@ -4,10 +4,11 @@ const bcrypt = require('bcrypt');
 const _ = require('underscore');
 
 const User = require('../models/user');
-const { count } = require('../models/user');
+const { authenticToken, authenticAdmin } = require('../middlewares/authentication');
+
 const app = express();
 
-app.get('/user', function(req, res) {
+app.get('/user', authenticToken, (req, res) => {
 
     let from = req.query.from || 0;
     from = Number(from);
@@ -30,11 +31,11 @@ app.get('/user', function(req, res) {
                     err
                 })
             }
-            User.countDocuments(filter, (err, counted) => {
+            User.countDocuments(filter, (err, counting) => {
                 res.json({
                     ok: true,
                     users,
-                    counted
+                    counted: counting
                 })
             })
 
@@ -43,7 +44,7 @@ app.get('/user', function(req, res) {
 
 
 })
-app.post('/user', function(req, res) {
+app.post('/user', [authenticToken, authenticAdmin], (req, res) => {
     let body = req.body;
 
     let user = new User({
@@ -81,7 +82,7 @@ app.post('/user', function(req, res) {
     //     res.json({ persona: body })
     // }
 })
-app.put('/user/:id', function(req, res) {
+app.put('/user/:id', [authenticToken, authenticAdmin], (req, res) => {
 
     let id = req.params.id;
 
@@ -104,7 +105,7 @@ app.put('/user/:id', function(req, res) {
 
 
 })
-app.delete('/user/:id', function(req, res) {
+app.delete('/user/:id', [authenticToken, authenticAdmin], (req, res) => {
     let id = req.params.id;
     let changes = {
         status: false
