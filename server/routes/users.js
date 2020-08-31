@@ -112,13 +112,13 @@ app.delete('/user/:id', [authenticToken, authenticAdmin], (req, res) => {
     }
     User.findByIdAndUpdate(id, changes, { new: true }, (err, deletedUser) => {
         if (err) {
-            return res.status(400).json({
+            return res.status(500).json({
 
                 ok: false,
                 err
             })
         }
-        if (!deletedUser) {
+        if (!deletedUser || deletedUser.status === false) { //probar!!
             return res.status(400).json({
 
                 ok: false,
