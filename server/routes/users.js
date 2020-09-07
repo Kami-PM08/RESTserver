@@ -91,10 +91,19 @@ app.put('/user/:id', [authenticToken, authenticAdmin], (req, res) => {
 
     User.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, userDB) => {
         if (err) {
-            return res.status(400).json({
+            return res.status(500).json({
 
                 ok: false,
                 err
+            })
+        }
+        if (!userDB) {
+            return res.status(400).json({
+
+                ok: false,
+                err: {
+                    message: 'User not found.'
+                }
             })
         }
         res.json({
@@ -118,7 +127,7 @@ app.delete('/user/:id', [authenticToken, authenticAdmin], (req, res) => {
                 err
             })
         }
-        if (!deletedUser || deletedUser.status === false) { //probar!!
+        if (!deletedUser || deletedUser.status === false) {
             return res.status(400).json({
 
                 ok: false,
