@@ -39,7 +39,32 @@ let authenticAdmin = (req, res, next) => {
     next();
 }
 
+//==========================================
+//Authentication token by url
+
+let authenticTokenImg = (req, res, next) => {
+    let token = req.query.token;
+
+    jwt.verify(token, process.env.SEED, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({
+                ok: false,
+                err: {
+                    message: 'Invalid token.'
+                }
+            });
+        }
+
+        req.user = decoded.user;
+
+        next();
+
+    })
+
+}
+
 module.exports = {
     authenticToken,
-    authenticAdmin
+    authenticAdmin,
+    authenticTokenImg
 }
